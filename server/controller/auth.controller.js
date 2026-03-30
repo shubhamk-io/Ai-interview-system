@@ -1,5 +1,5 @@
-import { getToken } from "../../client/src/utils/token"
-import UserModel from "../models/user.model"
+import { getToken } from "../utils/token.js";
+import UserModel from "../models/user.model.js"
 
 
 const COOKIE_OPTIONS = {
@@ -18,6 +18,10 @@ export const googleAuth = async (req, res) => {
             return res.status(400).json({ message: "Email is required" })
         }
         let user = await UserModel.findOne({ email })
+
+        if (!user) {
+            user = await UserModel.create({ name, email })
+        }
 
         const token = getToken(user._id.toString())
         res.cookie("token", token, COOKIE_OPTIONS)

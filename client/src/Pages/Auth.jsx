@@ -3,8 +3,21 @@ import { BsRobot } from "react-icons/bs";
 import { IoSparkles } from "react-icons/io5";
 import { motion } from "framer-motion";
 import { FcGoogle } from "react-icons/fc";
+import { signInWithPopup } from 'firebase/auth';
+import { auth, provider } from '../utils/firebase';
 
 const Auth = () => {
+
+const handleAuth = async () => {
+    try {
+        const response = await signInWithPopup(auth,provider)
+        console.log(response.user)
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+
     return (
         <div className='w-full min-h-screen bg-[#f3f3f3] flex items-center justify-center px-6 py-20'>
 
@@ -45,13 +58,18 @@ const Auth = () => {
 
                 {/* Button */}
                 <motion.button
+                onClick={handleAuth}
                     whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.97 }}
+                    whileTap={{
+                        scale: 0.94,
+                        rotate: -1,
+                        boxShadow: "0px 2px 8px rgba(0,0,0,0.15)"
+                    }}
                     className='w-full flex items-center justify-center gap-3 py-3 
-          bg-white border border-gray-300 
-          text-gray-800 rounded-full shadow-sm
-          hover:shadow-md hover:bg-gray-50
-          transition-all duration-300'
+  bg-white border border-gray-300 
+  text-gray-800 rounded-full shadow-sm
+  hover:shadow-md hover:bg-gray-50
+  transition-all duration-300'
                 >
                     <FcGoogle size={20} />
                     Continue with Google

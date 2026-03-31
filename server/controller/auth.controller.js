@@ -4,9 +4,8 @@ import UserModel from "../models/user.model.js"
 
 const COOKIE_OPTIONS = {
     httpOnly: true,
-    secure: true,
-    sameSite: "none",
-    path: "/",
+    secure: false,
+    sameSite: "lax",
     maxAge: 7 * 24 * 60 * 60 * 1000, // ✅ 7 days
 };
 
@@ -17,7 +16,7 @@ export const googleAuth = async (req, res) => {
         if (!email) {
             return res.status(400).json({ message: "Email is required" })
         }
-        let user = await UserModel.findOne({ email })
+        let user = await UserModel.findOne({ email });
 
         if (!user) {
             user = await UserModel.create({ name, email })
@@ -46,7 +45,7 @@ export const googleAuth = async (req, res) => {
 export const logOutUser = async (req, res) => {
     try {
         res.clearCookie("token", COOKIE_OPTIONS);
-        return res.status(200).json({ success: ture, message: "logout succesfull " })
+        return res.status(200).json({ success: true, message: "logout successful" })
     } catch (error) {
         console.log("logOut Error ", error.message)
     }

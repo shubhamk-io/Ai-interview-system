@@ -1,29 +1,38 @@
-
-import jwt from "jsonwebtoken"
-
+import jwt from "jsonwebtoken";
 
 const isAuth = async (req, res, next) => {
     try {
+        // 🔥 DEBUG: check cookies aa rahi hai ya nahi
+        console.log("Cookies:", req.cookies);
+
         const { token } = req.cookies;
 
+        // 🔴 Check token exists
         if (!token) {
-            return res.status(401).json({ message: "Token not Found" })
+            console.log("❌ No token found");
+            return res.status(401).json({ message: "Token not Found" });
         }
 
+        // 🔴 Verify token
         const verifyToken = jwt.verify(token, process.env.JWT_SECRET);
 
+        // 🔴 Check payload
         if (!verifyToken.userId) {
-            return res.status(401).json({ message: "invalid Token" })
-        };
+            console.log("❌ Invalid token payload");
+            return res.status(401).json({ message: "invalid Token" });
+        }
 
-        req.userId = verifyToken.userId
+        // ✅ Attach userId
+        req.userId = verifyToken.userId;
+
+        console.log("✅ Auth success, userId:", req.userId);
 
         next();
 
-
     } catch (error) {
-        return res.status(401).json({ message: "Unauthorized" })
+        console.log("❌ Auth Error:", error.message); // 🔥 important
+        return res.status(401).json({ message: "Unauthorized" });
     }
-}
+};
 
-export default isAuth
+export default isAuth;

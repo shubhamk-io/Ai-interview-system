@@ -3,6 +3,8 @@ import { Route, Routes, useNavigate } from 'react-router-dom'
 import Home from './Pages/Home'
 import Auth from './Pages/Auth'
 import axios from "axios"
+import { useDispatch } from 'react-redux'
+import { setUserData } from './redux/userSlice'
 
 export const serverUrl = "http://localhost:8000"
 
@@ -10,6 +12,7 @@ const App = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const dispatch = useDispatch()
 
   useEffect(() => {
     const getUser = async () => {
@@ -18,14 +21,14 @@ const App = () => {
           serverUrl + "/api/user/current-user",
           { withCredentials: true }
         );
-        setUser(result.data);
+        dispatch(setUserData(result.data))
         console.log("Current user:", result.data);
       } catch (error) {
-        // 401 = not logged in, expected — don't log as error
+      
         if (error.response?.status !== 401) {
           console.log("getUser error:", error);
         }
-        setUser(null);
+        dispatch(setUserData(null))
       } finally {
         setLoading(false);
       }

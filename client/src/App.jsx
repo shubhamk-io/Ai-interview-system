@@ -34,7 +34,7 @@ const App = () => {
       }
     }
     getUser();
-  }, [])
+  }, [dispatch])
 
   // Don't render routes until we know auth status
   // Prevents flash of wrong page on refresh

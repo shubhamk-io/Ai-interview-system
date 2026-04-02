@@ -8,30 +8,38 @@ import { auth, provider } from '../utils/firebase';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { serverUrl } from '../App';
+import { useDispatch } from 'react-redux';
+import { setUserData } from '../redux/userSlice';
 
 const Auth = () => {
   const navigate = useNavigate();
+const dispatch = useDispatch()
+
 
   const handleAuth = async () => {
     try {
       // Step 1: Firebase Google sign-in
-      const result = await signInWithPopup(auth, provider);
-      const { displayName, email } = result.user;
+      const response = await signInWithPopup(auth, provider)
+      let name = user.displayName
+      let user = response.user
+      let email = user.email
 
       // Step 2: Send to your backend → sets the cookie
-      const response = await axios.post(
+      const result = await axios.post(
         serverUrl + "/api/auth/google",
-        { name: displayName, email },
+        { name, email },
         { withCredentials: true }
       );
 
-      console.log("Logged in:", response.data);
+dispatch(setUserData(result.data.user))
+      console.log("Logged in:", result.data);
 
       // Step 3: Go to home
       navigate("/");
 
     } catch (error) {
       console.log("Auth error:", error);
+      dispatch(setUserData(null))
     }
   }
 

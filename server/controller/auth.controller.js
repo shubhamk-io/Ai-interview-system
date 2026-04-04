@@ -45,9 +45,9 @@ export const googleAuth = async (req, res) => {
 export const logOutUser = async (req, res) => {
     try {
         res.clearCookie("token", COOKIE_OPTIONS);
-        return res.status(200).json({ success: true, message: "logout successful" })
+        return res.status(200).json({ success: true, message: "Logout successfully" });
     } catch (error) {
-        console.log("logOut Error ", error.message)
+        console.error("Logout Error:", error.message);
+        return res.status(500).json({ message: "Logout Error" });
     }
-    res.status(500).json({ message: "Error in logout controler" })
-}  
+};

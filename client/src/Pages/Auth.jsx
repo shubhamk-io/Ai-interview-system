@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { BsRobot } from "react-icons/bs";
 import { IoSparkles } from "react-icons/io5";
 import { motion } from "framer-motion";
@@ -11,37 +11,36 @@ import { serverUrl } from '../App';
 import { useDispatch } from 'react-redux';
 import { setUserData } from '../redux/userSlice';
 
-const Auth = () => {
+
+const Auth = (isModel = false) => {
   const navigate = useNavigate();
 const dispatch = useDispatch()
 
 
+
   const handleAuth = async () => {
     try {
-      // Step 1: Firebase Google sign-in
       const response = await signInWithPopup(auth, provider)
-      let name = user.displayName
-      let user = response.user
-      let email = user.email
+      
+      
+      const user = response.user
+      const name = user.displayName
+      const email = user.email
 
-      // Step 2: Send to your backend → sets the cookie
       const result = await axios.post(
         serverUrl + "/api/auth/google",
         { name, email },
         { withCredentials: true }
       );
 
-dispatch(setUserData(result.data.user))
-      console.log("Logged in:", result.data);
-
-      // Step 3: Go to home
+      dispatch(setUserData(result.data.user))
       navigate("/");
 
     } catch (error) {
       console.log("Auth error:", error);
       dispatch(setUserData(null))
     }
-  }
+}
 
   return (
     <div className='w-full min-h-screen bg-[#f3f3f3] flex items-center justify-center px-6 py-20'>
@@ -113,6 +112,7 @@ dispatch(setUserData(result.data.user))
         </p>
 
       </motion.div>
+
     </div>
   )
 }

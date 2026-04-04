@@ -1,10 +1,15 @@
 import React, { useState } from 'react'
 import { motion } from "framer-motion";
-import { useSelector } from 'react-redux'
+import axios from "axios"
+import { useDispatch, useSelector } from 'react-redux'
 import { BsRobot, BsCoin } from "react-icons/bs";
 import { HiOutlineLogout } from "react-icons/hi";
 import { FaUserAstronaut } from "react-icons/fa6";
 import { useNavigate } from 'react-router-dom';
+import { setUserData } from "../redux/userSlice"
+import { serverUrl } from '../App';
+import AuthModel from '../components/AuthModel';
+
 
 const Navebar = () => {
 
@@ -12,7 +17,21 @@ const Navebar = () => {
 
     const [showCrediPopup, setShowCrediPopup] = useState(false)
     const [showUserPopup, setShowUserPopup] = useState(false)
+    const [showAuth, setShowAuth] = useState(false)
     const navigate = useNavigate()
+    const dispatch = useDispatch()
+
+
+
+    const handleSignOut = async () => {
+        try {
+            await axios.get(serverUrl + "/api/auth/logout", { withCredentials: true })
+            dispatch(setUserData(null))
+           
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     return (
         <div className='bg-[#f3f3f3] flex justify-center px-4 pt-6'>
@@ -50,6 +69,10 @@ const Navebar = () => {
                     <div className='relative'>
                         <button
                             onClick={() => {
+                                if (!userData) {
+                                    setShowAuth(true)
+                                    return
+                                }
                                 setShowCrediPopup(!showCrediPopup);
                                 setShowUserPopup(false);
                             }}
@@ -90,6 +113,10 @@ const Navebar = () => {
                     <div className='relative'>
                         <motion.button
                             onClick={() => {
+                                if (!userData) {
+                                    setShowAuth(true)
+                                    return
+                                }
                                 setShowUserPopup(!showUserPopup);
                                 setShowCrediPopup(false);
                             }}
@@ -135,8 +162,9 @@ const Navebar = () => {
                                     Interview Analytics
                                 </motion.button>
 
-                                {/* Logout */}
+                                {/* Signout */}
                                 <motion.button
+                                    onClick={handleSignOut}
                                     whileHover={{ scale: 1.04, x: 3 }}
                                     whileTap={{ scale: 0.96 }}
                                     className='w-full text-left text-sm py-2 px-3 mt-1 rounded-lg 
@@ -155,6 +183,9 @@ const Navebar = () => {
                 </div>
 
             </motion.div>
+
+            {showAuth && <AuthModel onClose={() => setShowAuth(false)} />}
+
         </div>
     )
 }

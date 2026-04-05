@@ -20,7 +20,9 @@ const App = () => {
         const result = await axios.get(
           serverUrl + "/api/user/current-user",
           { withCredentials: true }
-        );
+        )
+         console.log("API RESPONSE:", result.data.user);
+        ;
         dispatch(setUserData(result.data))
         console.log("Current user:", result.data);
       } catch (error) {

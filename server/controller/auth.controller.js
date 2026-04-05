@@ -3,51 +3,65 @@ import UserModel from "../models/user.model.js"
 
 
 const COOKIE_OPTIONS = {
-    httpOnly: true,
-    secure: false,
-    sameSite: "lax",
-    maxAge: 7 * 24 * 60 * 60 * 1000, // ✅ 7 days
+  httpOnly: true,
+  secure: true,
+  sameSite: "none",
+  path: "/",
+  maxAge: 7 * 24 * 60 * 60 * 1000, // ✅ 7 days
 };
 
 export const googleAuth = async (req, res) => {
-    try {
-        const { name, email } = req.body
+  try {
+    const { name, email } = req.body;
 
-        if (!email) {
-            return res.status(400).json({ message: "Email is required" })
-        }
-        let user = await UserModel.findOne({ email });
-
-        if (!user) {
-            user = await UserModel.create({ name, email })
-        }
-
-        const token = getToken(user._id.toString())
-        res.cookie("token", token, COOKIE_OPTIONS)
-
-        res.status(200).json({
-            success: true,
-            token,
-            user: {
-                _id: user._id,
-                name: user.name,
-                email: user.email,
-                credits: user.credits  // credits add 
-            }
-        })
-
-    } catch (error) {
-        console.error("GoogleAuth Error : ", error.message)
-        return res.status(500).json({ message: "Google singUp error" })
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
     }
-}
+
+    let user = await UserModel.findOne({ email });
+
+    if (!user) {
+      user = await UserModel.create({ name, email });
+    }
+
+    
+    const token = getToken(user._id.toString());
+
+    res.cookie("token", token, COOKIE_OPTIONS);
+
+    return res.status(200).json({
+      success: true,
+      token,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        credits: user.credits, // ✅ credits add 
+      },
+    });
+
+  } catch (error) {
+    console.error("Google Auth Error:", error.message);
+    return res.status(500).json({ message: "Google signup Error" });
+  }
+};
 
 export const logOutUser = async (req, res) => {
-    try {
-        res.clearCookie("token", COOKIE_OPTIONS);
-        return res.status(200).json({ success: true, message: "Logout successfully" });
-    } catch (error) {
-        console.error("Logout Error:", error.message);
-        return res.status(500).json({ message: "Logout Error" });
-    }
+  try {
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: true,        // keep same
+      sameSite: "none",    // keep same
+      path: "/",
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Logout successfully",
+    });
+
+  } catch (error) {
+    console.error("Logout Error:", error.message);
+    return res.status(500).json({ message: "Logout Error" });
+  }
 };

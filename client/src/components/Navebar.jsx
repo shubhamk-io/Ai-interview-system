@@ -10,7 +10,6 @@ import { setUserData } from "../redux/userSlice"
 import { serverUrl } from '../App';
 import AuthModel from '../components/AuthModel';
 
-
 const Navebar = () => {
 
     const { userData } = useSelector((state) => state.user)
@@ -18,23 +17,28 @@ const Navebar = () => {
     const [showCrediPopup, setShowCrediPopup] = useState(false)
     const [showUserPopup, setShowUserPopup] = useState(false)
     const [showAuth, setShowAuth] = useState(false)
+
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
-
-
     const handleSignOut = async () => {
         try {
-            await axios.get(serverUrl + "/api/auth/logout", { withCredentials: true })
+            const res = await axios.get(serverUrl + "/api/auth/logout", {
+                withCredentials: true
+            })
+            console.log("Logout response:", res.data)
+
             dispatch(setUserData(null))
-           
+            setShowUserPopup(false)
+            navigate("/")
+
         } catch (error) {
-            console.log(error)
+            console.log("Logout error:", error)
         }
     }
 
     return (
-        <div className='bg-[#f3f3f3] flex justify-center px-4 pt-6'>
+        <div className='bg-[#f3f3f3] flex justify-center px-4 pt-6 relative z-50'>
 
             <motion.div
                 initial={{ opacity: 0, y: -40 }}
@@ -44,7 +48,7 @@ const Navebar = () => {
                 rounded-[28px] 
                 bg-white/60 backdrop-blur-xl 
                 border border-gray-200 
-                shadow-[0_10px_40px_rgba(0,0,0,0.08)]'
+                shadow-[0_10px_40px_rgba(0,0,0,0.08)] z-50'
             >
 
                 {/* Logo */}
@@ -130,7 +134,6 @@ const Navebar = () => {
                                 : <FaUserAstronaut size={16} />}
                         </motion.button>
 
-                        {/* 🔥 Premium User Popup */}
                         {showUserPopup && (
                             <motion.div
                                 initial={{ opacity: 0, y: -10, scale: 0.95 }}
@@ -139,37 +142,31 @@ const Navebar = () => {
                                 className='absolute right-0 mt-3 w-52 bg-white shadow-xl border border-gray-200 rounded-xl p-4 z-50'
                             >
 
-                                {/* Name */}
                                 <p className='text-sm font-semibold mb-3 
                                 text-transparent bg-clip-text 
                                 bg-gradient-to-r from-indigo-500 to-purple-500'>
                                     {userData?.name}
                                 </p>
 
-                                {/* Divider */}
                                 <div className='h-px bg-gray-200 mb-3'></div>
 
-                                {/* Interview Analytics */}
                                 <motion.button
                                     whileHover={{ scale: 1.04, x: 3 }}
                                     whileTap={{ scale: 0.96 }}
                                     onClick={() => navigate("/history")}
                                     className='w-full text-left text-sm py-2 px-3 rounded-lg 
                                     text-gray-600 hover:text-black 
-                                    hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50
-                                    transition-all duration-300'
+                                    hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50'
                                 >
                                     Interview Analytics
                                 </motion.button>
 
-                                {/* Signout */}
                                 <motion.button
                                     onClick={handleSignOut}
                                     whileHover={{ scale: 1.04, x: 3 }}
                                     whileTap={{ scale: 0.96 }}
                                     className='w-full text-left text-sm py-2 px-3 mt-1 rounded-lg 
-                                    flex items-center gap-2 text-red-500 
-                                    hover:bg-red-50 transition-all duration-300'
+                                    flex items-center gap-2 text-red-500 hover:bg-red-50'
                                 >
                                     <HiOutlineLogout size={16} />
                                     Sign Out
@@ -177,15 +174,12 @@ const Navebar = () => {
 
                             </motion.div>
                         )}
-
                     </div>
 
                 </div>
-
             </motion.div>
 
             {showAuth && <AuthModel onClose={() => setShowAuth(false)} />}
-
         </div>
     )
 }

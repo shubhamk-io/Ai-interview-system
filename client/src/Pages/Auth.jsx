@@ -12,7 +12,7 @@ import { useDispatch } from 'react-redux';
 import { setUserData } from '../redux/userSlice';
 
 
-const Auth = (isModel = false) => {
+const Auth = ({isModel = false}) => {
   const navigate = useNavigate();
 const dispatch = useDispatch()
 

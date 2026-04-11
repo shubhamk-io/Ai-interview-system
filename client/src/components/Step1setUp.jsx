@@ -1,8 +1,64 @@
 import React from 'react'
+import { motion } from "framer-motion";
+import {
+  FaUserTie,
+  FaBriefcase,
+  FaFileUpload,
+  FaMicrophoneAlt,
+  FaChartLine,
+} from "react-icons/fa";
 
-const Step1setUp = ({onStart}) => {
+const Step1setUp = ({ onStart }) => {
   return (
-    <div>Step1setUp</div>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6 }}
+      className='min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 px-4 '>
+
+      <div className='w-full max-w-6xl bg-white rounded-3xl shadow-2xl grid md:grid-cols-2 overflow-hidden '>
+
+        <motion.div
+          initial={{ x: -80, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.7 }}
+          className='relative bg-gradient-to-br from-green-50 to-green-100 p-12 flex flex-col justify-center '>
+<h2 className='text-4xl font-bold text-gray-800 mb-6 '>
+  Start Your AI Interview
+</h2>
+
+<p className='text-gray-600 mb-10'>
+  Practice real interview scanarios powered by AI.
+  Improve communication, technical skills, and confidence.
+</p>
+
+<div className='space-y-5'>
+  {
+    [
+      {
+        icon:<FaUserTie className='text-green-600 textxl'/>,
+        text:"Choose Role & Experience"
+      },
+      {
+        icon:<FaMicrophoneAlt className='text-green-600 text-xl' />,
+        text:"Smart Voice interview"
+      },
+      {
+        icon:<FaChartLine className='text-green-600 text-xl' />,
+        text:"Performance Analytics"
+      }
+    ]
+  }
+</div>
+
+        </motion.div>
+
+
+        <motion.div></motion.div>
+
+      </div>
+
+    </motion.div>
   )
 }
 

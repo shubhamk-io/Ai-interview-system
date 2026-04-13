@@ -1,5 +1,5 @@
 import fs from "fs";
-import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.js";
+import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 import { askApi } from "../services/openRouter.services.js";
 
 export const analyzeResume = async (req, res) => {
@@ -35,7 +35,7 @@ export const analyzeResume = async (req, res) => {
         // 6. AI Prompt (IMPORTANT FIXES HERE)
         const message = [
             {
-                role: "system", // ❌ "System" → ✅ "system"
+                role: "system",
                 content: `
 Extract structured data from resume.
 
@@ -73,7 +73,7 @@ Return strictly JSON:
         res.json({
             role: parsed.role,
             experience: parsed.experience,
-            projects: parsed.projects, 
+            projects: parsed.projects,
             skills: parsed.skills,
             resumeText
         });

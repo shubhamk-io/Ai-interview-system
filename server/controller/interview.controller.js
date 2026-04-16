@@ -1,6 +1,8 @@
 import fs from "fs";
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 import { askApi } from "../services/gemini.services.js";
+import User from "../models/user.model.js";
+import Interview from "../models/interview.model.js";
 
 export const analyzeResume = async (req, res) => {
   try {
@@ -93,3 +95,119 @@ ${resumeText}
     res.status(500).json({ message: error.message });
   }
 };
+
+
+export const generateQuestion = async (req, res) => {
+  try {
+    const { role, experience, mode, resumeText, projects, skills } = req.body
+
+    role = role?.trim();
+    experience = experience?.trim();
+    mode = mode?.trim();
+
+    if (!role || !experience || !mode) {
+      return res.status(400).json({ message: "Role, Experience and mode are required" })
+    }
+
+    const user = await User.findById(req.userId)
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User is not found"
+      });
+    }
+
+    if (user.credits < 50) {
+      return res.status(400).json({
+        message: "Not enough credits. Minimum 50 required."
+      })
+    }
+
+    const projectText = Array.isArray(projects) && projects.length ? projects.join(", ") : "None";
+
+    const skillText = Array.isArray(skills) && skills.length ? skills.join(", ") : "None";
+
+    const safeResume = resumeText?.trim() || "None";
+
+    const userPrompt = `
+Role:${role}
+Experience:${experience}
+InterviewMode:${mode}
+Project:${projectText}
+Skills:${skillText}
+resume:${safeResume}
+`;
+
+    if (!userPrompt.trim()) {
+      return res.status(400).json({
+        message: "Prompt content is empty"
+      })
+    }
+
+    const message = [
+
+      {
+        role: "system",
+        content: `
+        You are a real human interviw conducting a professional interview.
+
+        Speak in simple, natural English as if you are directly taling to the candidate.
+
+        Generate exactly 5 interview questions.
+
+        Strict Rules:
+        - Each question must contain between 15 and 25 words.
+        - Each questions must be a single complete sentence. 
+        - Do NOT number them.
+        - Do NOT add explanations.
+        - Do NOT add extra text before or after.
+        - One question per line only.
+        - Keep language simple and conversational.
+        - Questions must feel practical and realistic.
+
+        Difficulty progression:
+        Question 1 -> easy
+        Question 2 -> easy
+        Question 3 -> medium
+        Question 4 -> hard
+        Question 5 -> hard
+
+Make questions based on the candidat's role, interviewMode, experience, project, skills, and resume details.
+        `
+      },
+
+      {
+        role: "user",
+        content: userPrompt
+      }
+    ];
+
+
+const aiResponse = await askApi(message)
+
+if(!aiResponse || !aiResponse.trim()){
+  return res.status(500).json({
+    message:"AI returned empty response"
+  })
+}
+
+const questionsArray = aiResponse
+.split("\n")
+.map(q =>q.trim())
+.filter(q => q.length > 0 )
+.slice(0,5)
+
+if(questionsArray.length === 0 ) {
+  return res.status(500).json({
+    message:"AI Faile to generate quesitons."
+  });
+}
+
+user.credits -= 50
+await user.save();
+
+
+  } catch (error) {
+
+  }
+}

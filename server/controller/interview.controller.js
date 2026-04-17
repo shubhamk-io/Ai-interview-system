@@ -183,31 +183,57 @@ Make questions based on the candidat's role, interviewMode, experience, project,
     ];
 
 
-const aiResponse = await askApi(message)
+    const aiResponse = await askApi(message)
 
-if(!aiResponse || !aiResponse.trim()){
-  return res.status(500).json({
-    message:"AI returned empty response"
-  })
-}
+    if (!aiResponse || !aiResponse.trim()) {
+      return res.status(500).json({
+        message: "AI returned empty response"
+      })
+    }
 
-const questionsArray = aiResponse
-.split("\n")
-.map(q =>q.trim())
-.filter(q => q.length > 0 )
-.slice(0,5)
+    const questionsArray = aiResponse
+      .split("\n")
+      .map(q => q.trim())
+      .filter(q => q.length > 0)
+      .slice(0, 5)
 
-if(questionsArray.length === 0 ) {
-  return res.status(500).json({
-    message:"AI Faile to generate quesitons."
-  });
-}
+    if (questionsArray.length === 0) {
+      return res.status(500).json({
+        meIssage: "AI Faile to generate quesitons."
+      });
+    }
 
-user.credits -= 50
-await user.save();
+    user.credits -= 50
+    await user.save();
 
+    const interview = await Interview.create({
+      userId: user._id,
+      role,
+      experience,
+      mode,
+      resumeText,
+      questions: questionsArray.map((q, index) => ({
+        question: q,
+        difficulty: ["easy", "easy", "medium", "hard", "hard"][index],
+        timeLimit: [60, 60, 90, 120, 120][index],
+      }))
+    })
+
+
+    res.json({
+      interviewId: interview._id,
+      creditsLeft: user.credits,
+      userName: user.name,
+      questions: interview.questions
+    });
 
   } catch (error) {
-
+    return res.status(500).json({
+      message: error
+    })
   }
 }
+
+
+
+

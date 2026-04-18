@@ -235,5 +235,27 @@ Make questions based on the candidat's role, interviewMode, experience, project,
 }
 
 
+export const submitAnswer = async (req, res) => {
+  try {
+    const { interviewId, questionIndex, answer, timeTaken } = req.body
 
+    const interview = await Interview.findById(interviewId);
+    const questions = interview.questions[questionIndex]
 
+    if (!answer) {
+      question.score = 0;
+      question.feedback = "You did not sumbmit an answer."
+      qurestion.answer = "";
+
+      await interview.save()
+
+      return res.json({
+        feedback: question.feedback
+      })
+      
+    }
+
+  } catch (error) {
+
+  }
+}

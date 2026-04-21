@@ -71,7 +71,7 @@ The platform leverages the **OpenAI API** to dynamically generate questions and 
 
 ### AI Integration
 
-* **OpenAI API** (Question generation & feedback analysis)
+* **GeminiAI API** (Question generation & feedback analysis)
 
 ### Authentication & Payments
 

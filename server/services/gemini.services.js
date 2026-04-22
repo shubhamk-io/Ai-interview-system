@@ -1,13 +1,36 @@
 import axios from "axios"
 
-export const askApi = async ({ message }) => {
+export const askApi = async (message) => {  // ✅ No destructuring
     try {
         if (!message || !Array.isArray(message) || message.length === 0) {
             throw new Error("Message array is empty.")
         }
 
-        // Convert OpenAI message format → Gemini contents format
-        const contents = message.map((msg) => ({
+        // ✅ Convert system role → prepend to first user message
+        let systemPrompt = "";
+        const userMessages = [];
+
+        for (const msg of message) {
+            if (msg.role === "system") {
+                systemPrompt = msg.content + "\n\n";
+            } else {
+                userMessages.push(msg);
+            }
+        }
+
+        // ✅ Inject system prompt into first user message
+        if (systemPrompt && userMessages.length > 0) {
+            userMessages[0] = {
+                ...userMessages[0],
+                content: systemPrompt + userMessages[0].content
+            };
+        }
+
+        if (userMessages.length === 0) {
+            throw new Error("Message array is empty.")
+        }
+
+        const contents = userMessages.map((msg) => ({
             role: msg.role === "assistant" ? "model" : "user",
             parts: [{ text: msg.content }]
         }))

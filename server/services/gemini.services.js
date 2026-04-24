@@ -36,7 +36,7 @@ export const askApi = async (message) => {  // ✅ No destructuring
         }))
 
         const response = await axios.post(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`,
+            `687`,
             { contents },
             {
                 headers: {

@@ -220,3 +220,203 @@ html {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
+/* ===== BOLD CARD STYLES ===== */
+
+/* Base Bold Card */
+.bold-card {
+  background: white;
+  border: 2.5px solid #1f2937;
+  border-radius: 16px;
+  padding: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 8px 8px 0px rgba(0, 0, 0, 0.1);
+}
+
+.bold-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 12px 12px 0px rgba(0, 0, 0, 0.15);
+  border-color: #6366f1;
+}
+
+/* Bold Card with Gradient Border */
+.bold-card-gradient {
+  background: white;
+  border: 3px solid transparent;
+  border-radius: 16px;
+  padding: 20px;
+  position: relative;
+  background-clip: padding-box;
+  transition: all 0.3s ease;
+  box-shadow: 8px 8px 0px rgba(0, 0, 0, 0.1);
+}
+
+.bold-card-gradient::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 3px;
+  background: linear-gradient(135deg, #6366f1, #a855f7, #ec4899);
+  border-radius: 16px;
+  z-index: -1;
+}
+
+.bold-card-gradient:hover {
+  transform: translateY(-4px);
+  box-shadow: 12px 12px 0px rgba(99, 102, 241, 0.2);
+}
+
+/* Colored Bold Cards */
+.bold-card-primary {
+  background: white;
+  border: 2.5px solid #6366f1;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 8px 8px 0px rgba(99, 102, 241, 0.15);
+  transition: all 0.3s ease;
+}
+
+.bold-card-primary:hover {
+  transform: translateY(-4px);
+  box-shadow: 12px 12px 0px rgba(99, 102, 241, 0.25);
+  background: rgba(99, 102, 241, 0.03);
+}
+
+.bold-card-success {
+  background: white;
+  border: 2.5px solid #10b981;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 8px 8px 0px rgba(16, 185, 129, 0.15);
+  transition: all 0.3s ease;
+}
+
+.bold-card-success:hover {
+  transform: translateY(-4px);
+  box-shadow: 12px 12px 0px rgba(16, 185, 129, 0.25);
+  background: rgba(16, 185, 129, 0.03);
+}
+
+.bold-card-warning {
+  background: white;
+  border: 2.5px solid #f59e0b;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 8px 8px 0px rgba(245, 158, 11, 0.15);
+  transition: all 0.3s ease;
+}
+
+.bold-card-warning:hover {
+  transform: translateY(-4px);
+  box-shadow: 12px 12px 0px rgba(245, 158, 11, 0.25);
+  background: rgba(245, 158, 11, 0.03);
+}
+
+.bold-card-danger {
+  background: white;
+  border: 2.5px solid #ef4444;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 8px 8px 0px rgba(239, 68, 68, 0.15);
+  transition: all 0.3s ease;
+}
+
+.bold-card-danger:hover {
+  transform: translateY(-4px);
+  box-shadow: 12px 12px 0px rgba(239, 68, 68, 0.25);
+  background: rgba(239, 68, 68, 0.03);
+}
+
+/* Bold Card Compact (smaller padding) */
+.bold-card-compact {
+  background: white;
+  border: 2px solid #1f2937;
+  border-radius: 12px;
+  padding: 12px 16px;
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.bold-card-compact:hover {
+  transform: translateY(-2px);
+  box-shadow: 6px 6px 0px rgba(0, 0, 0, 0.12);
+  border-color: #6366f1;
+}
+
+/* Bold Card Large */
+.bold-card-lg {
+  background: white;
+  border: 3px solid #1f2937;
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 12px 12px 0px rgba(0, 0, 0, 0.12);
+  transition: all 0.3s ease;
+}
+
+.bold-card-lg:hover {
+  transform: translateY(-6px);
+  box-shadow: 16px 16px 0px rgba(0, 0, 0, 0.18);
+  border-color: #6366f1;
+}
+
+/* Bold Card with Accent */
+.bold-card-accent {
+  background: white;
+  border: 2.5px solid #1f2937;
+  border-left: 5px solid #6366f1;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 8px 8px 0px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.bold-card-accent:hover {
+  transform: translateY(-4px) translateX(2px);
+  box-shadow: 12px 12px 0px rgba(99, 102, 241, 0.2);
+  border-left-color: #a855f7;
+}
+
+/* Bold Card with Icon */
+.bold-card-with-icon {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  background: white;
+  border: 2.5px solid #1f2937;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 8px 8px 0px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.bold-card-with-icon:hover {
+  transform: translateY(-4px);
+  box-shadow: 12px 12px 0px rgba(0, 0, 0, 0.15);
+}
+
+.bold-card-with-icon .icon-wrapper {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  color: white;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+/* Bold Card Title & Content */
+.bold-card-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 8px 0;
+}
+
+.bold-card-content {
+  font-size: 0.95rem;
+  color: #6b7280;
+  line-height: 1.6;
+}

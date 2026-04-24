@@ -47,7 +47,7 @@ ${resumeText}
       }
     ];
 
-    // ✅ Fixed: direct array pass, no object wrap
+    //  direct array pass
     const aiResponse = await askApi(message);
 
     let cleaned = aiResponse.trim();
@@ -153,7 +153,7 @@ Make questions based on the candidate's role, interviewMode, experience, project
     ];
 
     // ✅ Direct array pass
-    const aiResponse = await askApi(message);
+   const aiResponse = await askApi(message);
 
     if (!aiResponse || !aiResponse.trim()) {
       return res.status(500).json({ message: "AI returned empty response" });
@@ -177,7 +177,7 @@ Make questions based on the candidate's role, interviewMode, experience, project
       role,
       experience,
       mode,
-      resumeText,
+      resumeText: safeResume,
       questions: questionsArray.map((q, index) => ({
         question: q,
         difficulty: ["easy", "easy", "medium", "hard", "hard"][index],
@@ -193,7 +193,8 @@ Make questions based on the candidate's role, interviewMode, experience, project
     });
 
   } catch (error) {
-    return res.status(500).json({ message: `Failed to create interview: ${error.message}` });
+    console.error("generateQuestion ERROR:", error.message) 
+  return res.status(500).json({ message: `Failed to create interview: ${error.message}` });
   }
 };
 

@@ -11,7 +11,7 @@ const UserSchema = new mongoose.Schema({
     },
     credits: {
         type: Number,
-        default: 100
+        default: 500
     }
 }, { timestamps: true });
 

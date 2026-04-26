@@ -4,6 +4,8 @@ import { askApi } from "../services/gemini.services.js";
 import User from "../models/user.model.js";
 import Interview from "../models/interview.model.js";
 
+pdfjsLib.GlobalWorkerOptions.workerSrc = ""; // ✅ Fix 1
+
 export const analyzeResume = async (req, res) => {
   try {
     if (!req.file) {
@@ -47,7 +49,6 @@ ${resumeText}
       }
     ];
 
-    //  direct array pass
     const aiResponse = await askApi(message);
 
     let cleaned = aiResponse.trim();
@@ -152,8 +153,7 @@ Make questions based on the candidate's role, interviewMode, experience, project
       }
     ];
 
-    // ✅ Direct array pass
-   const aiResponse = await askApi(message);
+    const aiResponse = await askApi(message);
 
     if (!aiResponse || !aiResponse.trim()) {
       return res.status(500).json({ message: "AI returned empty response" });
@@ -193,8 +193,8 @@ Make questions based on the candidate's role, interviewMode, experience, project
     });
 
   } catch (error) {
-    console.error("generateQuestion ERROR:", error.message) 
-  return res.status(500).json({ message: `Failed to create interview: ${error.message}` });
+    console.error("generateQuestion ERROR:", error.message);
+    return res.status(500).json({ message: `Failed to create interview: ${error.message}` });
   }
 };
 
@@ -209,7 +209,6 @@ export const submitAnswer = async (req, res) => {
       return res.status(404).json({ message: "Interview not found" });
     }
 
-    // ✅ Fixed: was "questions" (typo), now "question"
     const question = interview.questions[questionIndex];
 
     if (!question) {
@@ -282,13 +281,11 @@ Answer: ${answer}
       }
     ];
 
-    const aiResponse = await askApi(messages);
+    const aiResponse = await askApi(messages); // ✅ Fix 2
 
-    // ✅ Clean before parsing (Gemini sometimes adds ```json)
     let cleaned = aiResponse.trim().replace(/```json|```/g, "");
     const parsed = JSON.parse(cleaned);
 
-    // ✅ Fixed all typos: questiion, qurestion
     question.answer = answer;
     question.confidence = parsed.confidence;
     question.communication = parsed.communication;
@@ -310,15 +307,13 @@ export const finishInterview = async (req, res) => {
   try {
     const { interviewId } = req.body;
 
-    // ✅ Fixed: was "interview.findById" (lowercase), Interview model use karo
     const interview = await Interview.findById(interviewId);
 
     if (!interview) {
       return res.status(400).json({ message: "Failed to find interview" });
-      // ✅ Fixed: early return ke baad code nahi aana chahiye — moved logic below
     }
 
-    const totalQuestions = interview.questions.length;  // ✅ Fixed variable name
+    const totalQuestions = interview.questions.length;
 
     let totalScore = 0;
     let totalConfidence = 0;
@@ -340,7 +335,7 @@ export const finishInterview = async (req, res) => {
     interview.finalScore = finalScore;
     interview.status = "completed";
 
-    await interview.save();  // ✅ Fixed: was missing await
+    await interview.save();
 
     return res.status(200).json({
       finalScore: Number(finalScore.toFixed(1)),

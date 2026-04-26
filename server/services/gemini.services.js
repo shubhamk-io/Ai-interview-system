@@ -1,12 +1,12 @@
 import axios from "axios"
 
-export const askApi = async (message) => {  // ✅ No destructuring
+export const askApi = async (message) => {
     try {
         if (!message || !Array.isArray(message) || message.length === 0) {
             throw new Error("Message array is empty.")
         }
 
-        // ✅ Convert system role → prepend to first user message
+        // Convert system role → prepend to first user message
         let systemPrompt = "";
         const userMessages = [];
 
@@ -18,7 +18,7 @@ export const askApi = async (message) => {  // ✅ No destructuring
             }
         }
 
-        // ✅ Inject system prompt into first user message
+        // Inject system prompt into first user message
         if (systemPrompt && userMessages.length > 0) {
             userMessages[0] = {
                 ...userMessages[0],
@@ -30,13 +30,14 @@ export const askApi = async (message) => {  // ✅ No destructuring
             throw new Error("Message array is empty.")
         }
 
+        // Convert messages to Gemini format
         const contents = userMessages.map((msg) => ({
             role: msg.role === "assistant" ? "model" : "user",
             parts: [{ text: msg.content }]
         }))
 
         const response = await axios.post(
-            `687`,
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-04-17:generateContent",
             { contents },
             {
                 headers: {
@@ -55,7 +56,7 @@ export const askApi = async (message) => {  // ✅ No destructuring
         return content
 
     } catch (error) {
-        console.log("Gemini API Error:", error.response?.data || error.message)
+        console.error("Gemini API Error:", error.response?.data || error.message)
         throw new Error("Gemini API Error")
     }
 }

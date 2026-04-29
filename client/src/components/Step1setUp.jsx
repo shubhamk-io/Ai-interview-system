@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
-import { distance, motion, scale } from "framer-motion";
+// ✅ FIX: Removed `distance` and `scale` — they are NOT exports from framer-motion
+// Importing them caused a silent runtime crash
+import { motion } from "framer-motion";
 import {
   FaUserTie,
   FaMicrophoneAlt,
@@ -14,8 +16,8 @@ import { setUserData } from '../redux/userSlice';
 
 const Step1setUp = ({ onStart }) => {
 
-const {userData} = useSelector((state)=> state.user)
-const dispatch = useDispatch()
+  const { userData } = useSelector((state) => state.user)
+  const dispatch = useDispatch()
   const [role, setRole] = useState("")
   const [experience, setExperience] = useState("")
   const [mode, setMode] = useState("Technical")
@@ -26,19 +28,19 @@ const dispatch = useDispatch()
   const [resumeText, setResumeText] = useState("")
   const [analysisDone, setAnalysisDone] = useState(false)
   const [analyzing, setAnalyzing] = useState(false)
-
+  // ✅ FIX: Added error state so user gets feedback on failures
+  const [error, setError] = useState("")
 
   const handleUpload = async () => {
     if (!resumeFile || analyzing) return
-      setAnalyzing(true)  
+    setAnalyzing(true)
+    setError("")
 
     const formdata = new FormData()
     formdata.append("resume", resumeFile)
 
     try {
       const result = await axios.post(serverUrl + "/api/interview/resume", formdata, { withCredentials: true })
-
-      console.log(result.data)
 
       if (!role) setRole(result.data.role || "");
       if (!experience) setExperience(result.data.experience || "")
@@ -49,6 +51,8 @@ const dispatch = useDispatch()
 
     } catch (error) {
       console.error("Upload Error: ", error);
+      // ✅ FIX: Show user-facing error instead of silent fail
+      setError(error?.response?.data?.message || "Failed to analyze resume. Please try again.")
     } finally {
       setAnalyzing(false)
     }
@@ -56,28 +60,28 @@ const dispatch = useDispatch()
 
   const handleStart = async () => {
     setLoading(true)
+    setError("")
     try {
-   const result = await axios.post(
-  serverUrl + "/api/interview/generate-questions",
-  { role, experience, mode, resumeText, projects: project, skills },  // ✅
-  { withCredentials: true }
-)
-console.log(result.data)
+      const result = await axios.post(
+        serverUrl + "/api/interview/generate-questions",
+        { role, experience, mode, resumeText, projects: project, skills },
+        { withCredentials: true }
+      )
 
+      if (userData) {
+        dispatch(setUserData({ ...userData, credits: result.data.creditsLeft }))
+      }
 
-if(userData){
-  
-dispatch(setUserData({ ...userData, credits: result.data.creditsLeft }))
-}
-setLoading(false)
-onStart(result.data)
+      onStart(result.data)
 
     } catch (error) {
-      console.log(error)
+      console.error(error)
+      // ✅ FIX: Show user-facing error instead of silent fail
+      setError(error?.response?.data?.message || "Failed to start interview. Please try again.")
+    } finally {
       setLoading(false)
     }
   }
-
 
   return (
     <motion.div
@@ -98,7 +102,6 @@ onStart(result.data)
           className='relative p-8 flex flex-col justify-center 
           bg-gradient-to-br from-green-50 via-emerald-50 to-white'>
 
-          {/* soft blobs */}
           <div className='absolute w-52 h-52 bg-green-200/40 blur-2xl rounded-full top-6 left-6'></div>
           <div className='absolute w-40 h-40 bg-emerald-200/40 blur-xl rounded-full bottom-6 right-6'></div>
 
@@ -165,45 +168,53 @@ onStart(result.data)
             Interview Setup
           </h2>
 
+          {/* ✅ FIX: Error banner — shows API/network errors to user */}
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className='mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600'>
+              {error}
+            </motion.div>
+          )}
+
           <div className='space-y-4'>
 
             {/* ROLE INPUT */}
             <div className='relative'>
               <FaUserTie className='absolute top-1/2 left-4 -translate-y-1/2 text-gray-400 text-sm' />
-
               <input
                 type="text"
                 placeholder='Enter role'
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
                 className='w-full pl-11 pr-4 py-3 border border-gray-200 rounded-lg 
-        focus:ring-2 focus:ring-green-500/30 focus:border-green-500 
-        outline-none transition-all text-sm'
+                focus:ring-2 focus:ring-green-500/30 focus:border-green-500 
+                outline-none transition-all text-sm'
               />
             </div>
 
             {/* EXPERIENCE INPUT */}
             <div className='relative'>
               <FaBriefcase className='absolute top-1/2 left-4 -translate-y-1/2 text-gray-400 text-sm' />
-
               <input
                 type="text"
                 placeholder='Enter experience'
                 value={experience}
                 onChange={(e) => setExperience(e.target.value)}
                 className='w-full pl-11 pr-4 py-3 border border-gray-200 rounded-lg 
-        focus:ring-2 focus:ring-green-500/30 focus:border-green-500 
-        outline-none transition-all text-sm'
+                focus:ring-2 focus:ring-green-500/30 focus:border-green-500 
+                outline-none transition-all text-sm'
               />
             </div>
 
-            {/* MODE SELECT (separate) */}
+            {/* MODE SELECT */}
             <select
               value={mode}
               onChange={(e) => setMode(e.target.value)}
               className='w-full py-3 px-4 border border-gray-200 rounded-lg 
-      focus:ring-2 focus:ring-green-500/30 focus:border-green-500 
-      outline-none transition-all text-sm bg-white'
+              focus:ring-2 focus:ring-green-500/30 focus:border-green-500 
+              outline-none transition-all text-sm bg-white'
             >
               <option value="Technical">Technical Interview</option>
               <option value="HR">HR Interview</option>
@@ -252,15 +263,10 @@ onStart(result.data)
 
                 {project.length > 0 && (
                   <div>
-                    <p className='font-medium text-gray-700 mb-1'>
-                      Projects:
-                    </p>
-
+                    <p className='font-medium text-gray-700 mb-1'>Projects:</p>
                     <ul className='list-disc list-inside text-gray-600 space-y-1'>
                       {project.map((p, i) => (
-                        <li key={i}>
-                          {p}
-                        </li>
+                        <li key={i}>{p}</li>
                       ))}
                     </ul>
                   </div>
@@ -268,10 +274,7 @@ onStart(result.data)
 
                 {skills.length > 0 && (
                   <div>
-                    <p className='font-medium text-gray-700 mb-1'>
-                      Skills:
-                    </p>
-
+                    <p className='font-medium text-gray-700 mb-1'>Skills:</p>
                     <div className='flex flex-wrap gap-2'>
                       {skills.map((s, i) => (
                         <span key={i}
@@ -286,15 +289,14 @@ onStart(result.data)
               </motion.div>
             )}
 
-
             <motion.button
-            onClick={handleStart}
+              onClick={handleStart}
               disabled={!role || !experience || loading}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.95 }}
               className='w-full disabled:bg-gray-600 bg-green-600 hover:bg-green-700
               text-white py-3 rounded-full text-lg font-semibold transition duration-300 shadow-md'>
-             { loading ? "Starting..." : "Start Interview"}
+              {loading ? "Starting..." : "Start Interview"}
             </motion.button>
 
           </div>

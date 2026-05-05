@@ -145,8 +145,8 @@ PORT=5000
 MONGO_URI=your_mongodb_uri
 JWT_SECRET=your_secret_key
 
-# OpenAI
-OPENAI_API_KEY=your_openai_api_key
+# GEMINI AI
+GEMINI_API_KEY=_GEMINI_api_key
 
 # Firebase
 FIREBASE_API_KEY=your_key
